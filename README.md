@@ -99,8 +99,8 @@ cd push-swap
 
 3. Build the project:
 ```sh
-go build -o push-swap PushSwap/main.go
-go build -o checker Checker/main.go
+go build -o push-swap PushSwapC/main.go
+go build -o checker CheckerC/main.go
 ```
 
 ### Example
