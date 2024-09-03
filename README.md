@@ -50,7 +50,7 @@ Return `n` size of instructions for sorting `x` number of values:
 
 ## Programs
 
-### push_swap
+### Push Swap
 
 This program calculates and displays the smallest set of instructions to sort stack `a` in ascending order.
 
@@ -69,7 +69,7 @@ pa
 
 <br>
 
-### checker
+### Checker
 
 This program reads instructions from standard input and executes them on the given stack A. It then checks if stack A is sorted and stack B is empty.
 
