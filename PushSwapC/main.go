@@ -1,7 +1,7 @@
 package main
 
 import (
-	sort "PS/Functions/PushSort" // Import the sorting and utility functions from the PushSort package
+	sort "stacksort/Functions/PushSort" // Import the sorting and utility functions from the PushSort package
 	"fmt"
 	"os"
 	"strconv"

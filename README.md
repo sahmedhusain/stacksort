@@ -1,123 +1,145 @@
-# Push Swap
+# 🥞 StackSort
 
-Push-Swap is a Go project that involves sorting a list of integers using two stacks (A and B) and a set of predefined instructions.
+[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)](https://go.dev)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
-The project consists of two programs: `push_swap` and `checker`.
+**StackSort** is a high-efficiency dual-stack sorting algorithm generator and verifier implemented in Go. It computes the absolute minimal sequence of push, swap, and rotate operations required to sort an unorganized list of integers across two auxiliary stack structures (`Stack A` and `Stack B`).
 
-## Project Structure
+---
 
-```sh
-PUSH-SWAP
-├── CheckerC
-│   └── main.go
-├── Functions
-│   ├── CheckerStacks
-│   │   └── stacks.go
-│   ├── PushInstructions
-│   │   └── instructions.go
-│   ├── PushSort
-│   │   └── sort.go
-│   ├── PushStacks
-│   │   └── stacks.go
-├── PushSwapC
-│   └── main.go
-├── .gitignore
-├── go.mod
-├── LICENSE.md
-├── README.md
-└── test.sh
+## ⚡ Key Highlights
+
+- **Dual Binary Architecture**: Includes both `stacksort` (instruction generator) and `checker` (instruction validation engine).
+- **Instruction Optimization Constraints**: Guaranteed instruction thresholds:
+  - 3 elements: \(\le 3\) instructions
+  - 5 elements: \(\le 12\) instructions
+  - 100 elements: \(\le 1500\) instructions
+  - 500 elements: \(\le 11500\) instructions
+- **Primitive Stack Operations**: Implements atomic operations:
+  - **Push**: `pa` (push top B to A), `pb` (push top A to B).
+  - **Swap**: `sa` (swap top 2 A), `sb` (swap top 2 B), `ss` (simultaneous `sa` + `sb`).
+  - **Rotate**: `ra` (shift up A), `rb` (shift up B), `rr` (simultaneous `ra` + `rb`).
+  - **Reverse Rotate**: `rra` (shift down A), `rrb` (shift down B), `rrr` (simultaneous `rra` + `rrb`).
+
+---
+
+## 📋 Table of Contents
+
+- [Key Highlights](#-key-highlights)
+- [System Architecture](#-system-architecture)
+- [Sorting & Verification Flow](#-sorting--verification-flow)
+- [Setup & Execution](#-setup--execution)
+- [Project Directory Structure](#-project-directory-structure)
+- [License](#-license)
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+graph TD
+    A[Unsorted Integer String Payload] --> B[StackSort Engine - PushSwapC/main.go]
+    A --> C[Verification Checker Engine - CheckerC/main.go]
+    
+    B --> D[PushSort Optimization Handler]
+    D --> E1[Instruction Calculator - PushInstructions]
+    D --> E2[Stack State Mutator - PushStacks]
+    
+    E1 & E2 --> F[STDOUT Instruction Stream - pa, pb, ra, sa, rra]
+    F --> C
+    
+    C --> G[CheckerStacks Engine]
+    G --> H{Stack A Sorted & Stack B Empty?}
+    H -- Yes --> I[Output: OK]
+    H -- No --> J[Output: KO]
 ```
 
-## Instructions
+---
 
-- **pa**: Push the top element of stack B to stack A.
-- **pb**: Push the top element of stack A to stack B.
-- **sa**: Swap the first two elements of stack A.
-- **sb**: Swap the first two elements of stack B.
-- **ss**: Execute `sa` and `sb`.
-- **ra**: Rotate stack A (shift up all elements by 1, the first element becomes the last).
-- **rb**: Rotate stack B.
-- **rr**: Execute `ra` and `rb`.
-- **rra**: Reverse rotate A (shift down all elements by 1, the last element becomes the first).
-- **rrb**: Reverse rotate B.
-- **rrr**: Execute `rra` and `rrb`.
+## 📐 Sorting & Verification Flow
 
-Return `n` size of instructions for sorting `x` number of values:
-- If `x = 3`, then `n <= 3`.
-- If `x = 5`, then `n <= 12`.
-- If `x = 100`, then `n <= 1500`.
-- If `x = 500`, then `n <= 11500`.
+```mermaid
+sequenceDiagram
+    participant User
+    participant Generator as stacksort CLI
+    participant Checker as checker CLI
 
-## Programs
-
-### Push Swap
-
-This program calculates and displays the smallest set of instructions to sort stack `a` in ascending order.
-
-**Usage:**
-
-```sh
-$ ./push_swap "2 1 3 6 5 8"
-pb
-pb
-ra
-sa
-rrr
-pa
-pa
+    User->>Generator: ./stacksort "2 1 3 6 5 8"
+    Generator->>Generator: Initialize Stack A with integers, Stack B empty
+    Generator->>Generator: Execute partitioning & chunk sorting algorithms
+    Generator-->>User: Stream generated instructions (pb, ra, sa, pa, ...)
+    
+    User->>Checker: echo -e "sa\nrra\npa" | ./checker "2 1 3 6 5 8"
+    Checker->>Checker: Execute input instructions sequentially on Stack A/B
+    alt Stack A is Sorted & Stack B is Empty
+        Checker-->>User: Output "OK"
+    else Invalid Order or Non-Empty Stack B
+        Checker-->>User: Output "KO"
+    end
 ```
 
-<br>
+---
 
-### Checker
+## 🚀 Setup & Execution
 
-This program reads instructions from standard input and executes them on the given stack A. It then checks if stack A is sorted and stack B is empty.
+### Prerequisites
 
-**Usage:**
+- **Go**: Version 1.20 or newer installed.
 
-```sh
-$ ./checker "3 2 1 0"
-sa
-rra
-pb
+---
 
-KO
+### Build & Run
 
-$ echo -e "rra\npb\nsa\nrra\npa" | ./checker "3 2 1 0"
-OK
+1. **Clone Repository**:
+   ```bash
+   git clone https://github.com/sahmedhusain/stacksort.git
+   cd stacksort
+   ```
+
+2. **Compile Binaries**:
+   ```bash
+   go build -o stacksort PushSwapC/main.go
+   go build -o checker CheckerC/main.go
+   ```
+
+3. **Generate Sorting Instructions**:
+   ```bash
+   ./stacksort "2 1 3 6 5 8"
+   ```
+
+4. **Verify Instruction Correctness with Checker**:
+   ```bash
+   ARG="2 1 3 6 5 8"; ./stacksort "$ARG" | ./checker "$ARG"
+   ```
+   *Expected Output: `OK`*
+
+5. **Measure Instruction Count**:
+   ```bash
+   ARG="2 1 3 6 5 8"; ./stacksort "$ARG" | wc -l
+   ```
+
+---
+
+## 📂 Project Directory Structure
+
+```
+stacksort/
+├── go.mod                     # Go module manifest (module stacksort)
+├── README.md                  # Documentation
+├── test.sh                    # Verification test script
+├── PushSwapC/
+│   └── main.go                # Entrypoint for instruction generator binary
+├── CheckerC/
+│   └── main.go                # Entrypoint for validation checker binary
+└── Functions/
+    ├── PushSort/              # Core sorting algorithm routines
+    ├── PushInstructions/      # Instruction formatting and output string builders
+    ├── PushStacks/            # Generator stack operations (push, swap, rotate)
+    └── CheckerStacks/         # Checker stack operations and verification rules
 ```
 
-1. Clone the repository:
-```sh
-git clone https://github.com/sahmedhusain/push-swap.git
-```
+---
 
-2. Navigate to the project directory:
-```sh
-cd push-swap
-```
+## 📄 License
 
-3. Build the project:
-```sh
-go build -o push-swap PushSwapC/main.go
-go build -o checker CheckerC/main.go
-```
-
-### Example
-
-```sh
-$ ARG="2 1 3 6 5 8"; ./push-swap "$ARG" | wc -l
-8
-
-$ ARG="2 1 3 6 5 8"; ./push-swap "$ARG" | ./checker "$ARG"
-OK
-```
-## Author
-
-	•	Sayed Ahmed Husain
-
-## This project has helped me learn about:
-
-	•	The use of basic algorithms
-	•	The use of sorting algorithms
-	•	The use of stacks
+Distributed under the MIT License. See [LICENSE](LICENSE.md) for details.

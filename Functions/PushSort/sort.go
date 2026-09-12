@@ -1,8 +1,8 @@
 package sort
 
 import (
-	instruction "PS/Functions/PushInstructions" // Import the package for instruction-related functions
-	stacks "PS/Functions/PushStacks"            // Import the package for stack operations
+	instruction "stacksort/Functions/PushInstructions" // Import the package for instruction-related functions
+	stacks "stacksort/Functions/PushStacks"            // Import the package for stack operations
 )
 
 // SortStack sorts the stackA using an auxiliary stackB and returns the list of instructions used

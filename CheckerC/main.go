@@ -1,7 +1,7 @@
 package main
 
 import (
-	chstack "PS/Functions/CheckerStacks" // Import the custom package for stack operations, aliasing it as 'chstack'
+	chstack "stacksort/Functions/CheckerStacks" // Import the custom package for stack operations, aliasing it as 'chstack'
 	"fmt"                                // Import the fmt package for formatted I/O operations
 	"os"                                 // Import the os package to handle command-line arguments and standard input/output
 	"strings"                            // Import the strings package for string manipulation
