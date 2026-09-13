@@ -37,7 +37,7 @@
 ## 🏗️ System Architecture
 
 ```mermaid
-graph TD
+flowchart TD
     A[Unsorted Integer String Payload] --> B[StackSort Engine - PushSwapC/main.go]
     A --> C[Verification Checker Engine - CheckerC/main.go]
     
@@ -45,13 +45,41 @@ graph TD
     D --> E1[Instruction Calculator - PushInstructions]
     D --> E2[Stack State Mutator - PushStacks]
     
-    E1 & E2 --> F[STDOUT Instruction Stream - pa, pb, ra, sa, rra]
+    E1 --> F[STDOUT Instruction Stream - pa, pb, ra, sa, rra]
+    E2 --> F
     F --> C
     
     C --> G[CheckerStacks Engine]
     G --> H{Stack A Sorted & Stack B Empty?}
     H -- Yes --> I[Output: OK]
     H -- No --> J[Output: KO]
+```
+
+---
+
+## 🖥️ Live Terminal & Pipeline Verification Preview
+
+Below is a live shell trace demonstrating StackSort generating instructions for an unsorted set of numbers and piping the instructions into `checker` for validation:
+
+```text
+$ ARG="4 67 3 1 2 9 8 5"
+$ ./stacksort "$ARG"
+
+pb
+pb
+pb
+sa
+ra
+pa
+pa
+pa
+ra
+
+$ ./stacksort "$ARG" | ./checker "$ARG"
+OK
+
+$ ./stacksort "$ARG" | wc -l
+9
 ```
 
 ---
